@@ -16,17 +16,18 @@ public abstract class BasePostgresSqlTest {
     public void restoreSnapshot() throws SQLException {
         try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
             var truncateSql = "TRUNCATE %s RESTART IDENTITY".formatted(POST_TABLE_NAME);
-            var stm = connection.createStatement();
-            stm.executeUpdate(truncateSql);
+            try (var stm = connection.createStatement()) {
+                stm.executeUpdate(truncateSql);
 
-            // insert some records into the DB
-            var insertQuery = """
-                    INSERT INTO post(title, version) values
-                    ('Hypersistence', 0),
-                    ('Advanced Java Performance', 0),
-                    ('Getting Oracle Certified Programmer', 0);
-                    """;
-            stm.executeUpdate(insertQuery);
+                // insert some records into the DB
+                var insertQuery = """
+                        INSERT INTO post(title, version) values
+                        ('Hypersistence', 0),
+                        ('Advanced Java Performance', 0),
+                        ('Getting Oracle Certified Programmer', 0);
+                        """;
+                stm.executeUpdate(insertQuery);
+            }
         }
     }
 }

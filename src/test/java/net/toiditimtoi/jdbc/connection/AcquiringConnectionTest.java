@@ -110,22 +110,24 @@ public class AcquiringConnectionTest extends BasePostgresSqlTest {
 
             // toggle autocommit off to play around with transaction
             connection.setAutoCommit(false);
-            var statement = connection.createStatement();
-            var insertSql = createInsertQuery(postName);
-            var rowsAffected = statement.executeUpdate(insertSql);
-            assertEquals(1, rowsAffected);
+            try (var statement = connection.createStatement()) {
+                var insertSql = createInsertQuery(postName);
+                var rowsAffected = statement.executeUpdate(insertSql);
+                assertEquals(1, rowsAffected);
+            }
         }
         // after the block above, the connection was closed without calling COMMIT
         // now let's see if the record is still there
         try (var anotherConnection = DriverManager.getConnection(URL, USER, PASSWORD)) {
-            var statement = anotherConnection.createStatement();
-            var query = createSelectQuery(postName);
-            try (var resultSet = statement.executeQuery(query)) {
-                String firstTitle = null;
-                while (resultSet.next()) {
-                    firstTitle = resultSet.getString("title");
+            try (var statement = anotherConnection.createStatement()) {
+                var query = createSelectQuery(postName);
+                try (var resultSet = statement.executeQuery(query)) {
+                    String firstTitle = null;
+                    while (resultSet.next()) {
+                        firstTitle = resultSet.getString("title");
+                    }
+                    assertNull(firstTitle);
                 }
-                assertNull(firstTitle);
             }
         }
     }
@@ -144,23 +146,25 @@ public class AcquiringConnectionTest extends BasePostgresSqlTest {
 
             // toggle autocommit off to play around with transaction
             connection.setAutoCommit(false);
-            var statement = connection.createStatement();
-            var insertSql = createInsertQuery(postName);
-            var rowsAffected = statement.executeUpdate(insertSql);
-            assertEquals(1, rowsAffected);
-            connection.commit();
+            try (var statement = connection.createStatement()) {
+                var insertSql = createInsertQuery(postName);
+                var rowsAffected = statement.executeUpdate(insertSql);
+                assertEquals(1, rowsAffected);
+                connection.commit();
+            }
         }
         // after the block above, the connection was closed without calling COMMIT
         // now let's see if the record is still there
         try (var anotherConnection = DriverManager.getConnection(URL, USER, PASSWORD)) {
-            var statement = anotherConnection.createStatement();
-            var query = createSelectQuery(postName);
-            try (var resultSet = statement.executeQuery(query)) {
-                String firstTitle = null;
-                while (resultSet.next()) {
-                    firstTitle = resultSet.getString("title");
+            try (var statement = anotherConnection.createStatement()) {
+                var query = createSelectQuery(postName);
+                try (var resultSet = statement.executeQuery(query)) {
+                    String firstTitle = null;
+                    while (resultSet.next()) {
+                        firstTitle = resultSet.getString("title");
+                    }
+                    assertEquals("Disappear Book", firstTitle);
                 }
-                assertEquals("Disappear Book", firstTitle);
             }
         }
     }
@@ -173,13 +177,14 @@ public class AcquiringConnectionTest extends BasePostgresSqlTest {
         try {
             connection = DriverManager.getConnection(URL, USER, PASSWORD);
             connection.setAutoCommit(false);
-            var statement = connection.createStatement();
-            var sql = createInsertQuery(postName);
-            statement.executeUpdate(sql);
-            if (true) {
-                throw new RuntimeException("I need another discussion with my wife before doing this");
+            try (var statement = connection.createStatement()) {
+                var sql = createInsertQuery(postName);
+                statement.executeUpdate(sql);
+                if (true) {
+                    throw new RuntimeException("I need another discussion with my wife before doing this");
+                }
+                // if everything goes well, we should commit the transaction
             }
-            // if everything goes well, we should commit the transaction
             connection.commit();
         } catch (Exception anyException) {
             // in case any exception happened, roll back
@@ -189,13 +194,14 @@ public class AcquiringConnectionTest extends BasePostgresSqlTest {
             assert connection != null;
             String title = null;
             var selectSql = createSelectQuery(postName);
-            var stm = connection.createStatement();
-            try (var resultSet = stm.executeQuery(selectSql)) {
-                while (resultSet.next()) {
-                    title = resultSet.getString("title");
+            try (var stm = connection.createStatement()) {
+                try (var resultSet = stm.executeQuery(selectSql)) {
+                    while (resultSet.next()) {
+                        title = resultSet.getString("title");
+                    }
+                    assertNull(title);
+                    connection.close();
                 }
-                assertNull(title);
-                connection.close();
             }
         }
     }
@@ -203,10 +209,11 @@ public class AcquiringConnectionTest extends BasePostgresSqlTest {
     @Test
     public void prepared_statement() {
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
-            var preparedStm = connection.prepareStatement("INSERT INTO post(title, version) values (?, 0)");
-            preparedStm.setString(1, "Prepared Statement");
-            var rowAffected = preparedStm.executeUpdate();
-            assertEquals(1, rowAffected);
+            try (var preparedStm = connection.prepareStatement("INSERT INTO post(title, version) values (?, 0)")) {
+                preparedStm.setString(1, "Prepared Statement");
+                var rowAffected = preparedStm.executeUpdate();
+                assertEquals(1, rowAffected);
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
