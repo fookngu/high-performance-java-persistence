@@ -14,6 +14,13 @@ public class GeneralTest {
         // before doing any interaction with the database, we need to establish a connection to the database
         try(Connection connection = DriverManager.getConnection(url, userName, password)) {
             try(Statement statement = connection.createStatement()) {
+                String insertStm = """
+                        insert into post(title, version) values 
+                        ('Hypersistence', 0),
+                        ('Advanced Java Performance', 0);
+                        """;
+                int rowAffected = statement.executeUpdate(insertStm);
+                System.out.println(rowAffected);
                 String sql = "select * from post";
                 try(ResultSet result = statement.executeQuery(sql)) {
                     while(result.next()) {
