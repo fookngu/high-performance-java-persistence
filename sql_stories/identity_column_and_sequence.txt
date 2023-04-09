@@ -1,0 +1,32 @@
+create table post
+(
+    id      SERIAL NOT NULL,
+    title   VARCHAR(255),
+    version int4   NOT NULL,
+    primary key (id)
+);
+insert into post(title, version) values ('Hypersistence', 0);
+insert into post(title, version) values ('Advanced Java Performance', 0);
+
+select nextval('post_id_seq');
+select nextval('post_id_seq');
+select nextval('post_id_seq');
+-- post_id_seq is now at sequence number 5
+
+-- now if we insert another record into the table
+
+insert into post(title, version) values ('Spring in Action', 0);
+
+select max(id) from post;
+-- we see that the latest record has an id of 6
+-- that mean every time we call nexval on the sequence, it returns the next sequence number and persists the latest update to the sequence
+
+
+/**
+  we saw that the serial keyword is just syntactic sugar, behind the scene, postgres generates a sequence to user only for
+  that table.
+ */
+create table new_post
+(
+    id
+)
