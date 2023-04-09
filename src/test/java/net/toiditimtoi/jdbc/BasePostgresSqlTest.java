@@ -15,7 +15,7 @@ public abstract class BasePostgresSqlTest {
     @AfterEach
     public void restoreSnapshot() throws SQLException {
         try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
-            var truncateSql = "TRUNCATE %s".formatted(POST_TABLE_NAME);
+            var truncateSql = "TRUNCATE %s RESTART IDENTITY".formatted(POST_TABLE_NAME);
             var stm = connection.createStatement();
             stm.executeUpdate(truncateSql);
 
