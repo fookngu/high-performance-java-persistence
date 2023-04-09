@@ -22,6 +22,7 @@ public class AcquiringConnectionTest extends BasePostgresSqlTest {
      * and we don't have to load the driver manually
      */
     @Test
+    @SuppressWarnings("unused")
     public void loading_the_jdbc_driver() throws Exception {
         var myName = "Kevin";
         var driver = Class.forName("org.postgresql.Driver");
@@ -39,10 +40,10 @@ public class AcquiringConnectionTest extends BasePostgresSqlTest {
     }
 
     /**
-     * This is one of the most common way to open a connection to the DB
+     * This is one of the most common ways to open a connection to the DB
      * A URL, a username and a password
      *
-     * @throws SQLException
+     * @throws SQLException indicating any problem during connection acquisition
      */
     @Test
     public void opening_another_connection_successfully_using_url_user_and_password() throws SQLException {
@@ -59,7 +60,7 @@ public class AcquiringConnectionTest extends BasePostgresSqlTest {
      * And depending on our need, we may want to pass additional parameter to customize
      * the connection
      *
-     * @throws SQLException
+     * @throws SQLException sql exception
      */
     @Test
     public void opening_connection_successfully_using_url_and_properties() throws SQLException {
@@ -78,7 +79,7 @@ public class AcquiringConnectionTest extends BasePostgresSqlTest {
      * A recommended approach is to use the try-with-resource syntax so that the connection will be automatically closed
      * even when there is a problem with the connection
      *
-     * @throws SQLException
+     * @throws SQLException sql exception
      */
     @Test
     public void closing_the_connection_after_we_are_done() throws SQLException {
@@ -165,6 +166,7 @@ public class AcquiringConnectionTest extends BasePostgresSqlTest {
     }
 
     @Test
+    @SuppressWarnings("always true")
     public void roll_back_a_transaction() throws SQLException {
         Connection connection = null;
         var postName = "Rolling in the deep";
@@ -199,7 +201,7 @@ public class AcquiringConnectionTest extends BasePostgresSqlTest {
     }
 
     @Test
-    public void prepared_statement() throws SQLException {
+    public void prepared_statement() {
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
             var preparedStm = connection.prepareStatement("INSERT INTO post(title, version) values (?, 0)");
             preparedStm.setString(1, "Prepared Statement");

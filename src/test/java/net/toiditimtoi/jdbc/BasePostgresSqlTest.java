@@ -2,7 +2,6 @@ package net.toiditimtoi.jdbc;
 
 import org.junit.jupiter.api.AfterEach;
 
-import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
@@ -22,11 +21,11 @@ public abstract class BasePostgresSqlTest {
 
             // insert some records into the DB
             var insertQuery = """
-            INSERT INTO post(title, version) values
-            ('Hypersistence', 0),
-            ('Advanced Java Performance', 0),
-            ('Getting Oracle Certified Programmer', 0);
-            """;
+                    INSERT INTO post(title, version) values
+                    ('Hypersistence', 0),
+                    ('Advanced Java Performance', 0),
+                    ('Getting Oracle Certified Programmer', 0);
+                    """;
             stm.executeUpdate(insertQuery);
         }
     }

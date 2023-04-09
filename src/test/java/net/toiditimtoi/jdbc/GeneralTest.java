@@ -15,7 +15,7 @@ public class GeneralTest {
         try(Connection connection = DriverManager.getConnection(url, userName, password)) {
             try(Statement statement = connection.createStatement()) {
                 String insertStm = """
-                        insert into post(title, version) values 
+                        insert into post(title, version) values
                         ('Hypersistence', 0),
                         ('Advanced Java Performance', 0);
                         """;
