@@ -119,12 +119,13 @@ public class AcquiringConnectionTest extends BasePostgresSqlTest {
         try (var anotherConnection = DriverManager.getConnection(URL, USER, PASSWORD)) {
             var statement = anotherConnection.createStatement();
             var query = createSelectQuery(postName);
-            var resultSet = statement.executeQuery(query);
-            String firstTitle = null;
-            while (resultSet.next()) {
-                firstTitle = resultSet.getString("title");
+            try (var resultSet = statement.executeQuery(query)) {
+                String firstTitle = null;
+                while (resultSet.next()) {
+                    firstTitle = resultSet.getString("title");
+                }
+                assertNull(firstTitle);
             }
-            assertNull(firstTitle);
         }
     }
 
@@ -153,12 +154,13 @@ public class AcquiringConnectionTest extends BasePostgresSqlTest {
         try (var anotherConnection = DriverManager.getConnection(URL, USER, PASSWORD)) {
             var statement = anotherConnection.createStatement();
             var query = createSelectQuery(postName);
-            var resultSet = statement.executeQuery(query);
-            String firstTitle = null;
-            while (resultSet.next()) {
-                firstTitle = resultSet.getString("title");
+            try (var resultSet = statement.executeQuery(query)) {
+                String firstTitle = null;
+                while (resultSet.next()) {
+                    firstTitle = resultSet.getString("title");
+                }
+                assertEquals("Disappear Book", firstTitle);
             }
-            assertEquals("Disappear Book", firstTitle);
         }
     }
 
@@ -166,7 +168,7 @@ public class AcquiringConnectionTest extends BasePostgresSqlTest {
     public void roll_back_a_transaction() throws SQLException {
         Connection connection = null;
         var postName = "Rolling in the deep";
-        try{
+        try {
             connection = DriverManager.getConnection(URL, USER, PASSWORD);
             connection.setAutoCommit(false);
             var statement = connection.createStatement();
@@ -177,7 +179,7 @@ public class AcquiringConnectionTest extends BasePostgresSqlTest {
             }
             // if everything goes well, we should commit the transaction
             connection.commit();
-        } catch(Exception anyException) {
+        } catch (Exception anyException) {
             // in case any exception happened, roll back
             assert connection != null;
             connection.rollback();
@@ -186,12 +188,13 @@ public class AcquiringConnectionTest extends BasePostgresSqlTest {
             String title = null;
             var selectSql = createSelectQuery(postName);
             var stm = connection.createStatement();
-            var result = stm.executeQuery(selectSql);
-            while (result.next()) {
-                title = result.getString("title");
+            try (var resultSet = stm.executeQuery(selectSql)) {
+                while (resultSet.next()) {
+                    title = resultSet.getString("title");
+                }
+                assertNull(title);
+                connection.close();
             }
-            assertNull(title);
-            connection.close();
         }
     }
 
