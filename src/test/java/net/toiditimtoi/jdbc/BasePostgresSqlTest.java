@@ -16,7 +16,7 @@ public abstract class BasePostgresSqlTest {
     @BeforeAll
     public static void createTableIfNotExists() throws SQLException {
         try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
-            var createTableSqlString = "CREATE TABLE IF NOT EXISTS %s(id serial not null , title varchar(255), version int)".formatted(POST_TABLE_NAME);
+            var createTableSqlString = "CREATE TABLE IF NOT EXISTS %s(id serial PRIMARY KEY, title varchar(255), version int)".formatted(POST_TABLE_NAME);
             try (var stm = connection.createStatement()) {
                 // create the table if not exists
                 stm.executeUpdate(createTableSqlString);
