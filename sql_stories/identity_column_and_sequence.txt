@@ -1,3 +1,6 @@
+--create table post(id serial not null , title varchar(255), version int);
+
+
 create table post
 (
     id      SERIAL NOT NULL,
