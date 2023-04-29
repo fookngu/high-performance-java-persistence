@@ -4,15 +4,12 @@ import org.junit.jupiter.api.Test;
 
 import java.sql.*;
 
-public class GeneralTest {
-    private static final String url = "jdbc:postgresql://localhost:5433/dummy";
-    private static final String userName = "postgres";
-    private static final String password = "mysecretpassword";
+public class GeneralTest extends BasePostgresSqlTest {
 
     @Test
     public void summaryExample() throws SQLException {
         // before doing any interaction with the database, we need to establish a connection to the database
-        try(Connection connection = DriverManager.getConnection(url, userName, password)) {
+        try(Connection connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
             try(Statement statement = connection.createStatement()) {
                 String insertStm = """
                         insert into post(title, version) values
