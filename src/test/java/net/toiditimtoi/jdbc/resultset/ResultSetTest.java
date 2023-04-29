@@ -107,9 +107,6 @@ public class ResultSetTest extends BasePostgresSqlTest {
     }
 
     private static void printCurrentRow(ResultSet resultSet) throws SQLException {
-        if (resultSet.isBeforeFirst() || resultSet.isAfterLast()) {
-            return;
-        }
         var currentPos = resultSet.getRow();
         var id = resultSet.getInt("id");
         var title = resultSet.getString("title");
