@@ -1,7 +1,7 @@
 package net.toiditimtoi.jdbc;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -13,7 +13,18 @@ public abstract class BasePostgresSqlTest {
 
     protected static final String POST_TABLE_NAME = "post";
 
-    @AfterEach
+    @BeforeAll
+    public static void createTableIfNotExists() throws SQLException {
+        try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
+            var createTableSqlString = "CREATE TABLE IF NOT EXISTS %s(id serial not null , title varchar(255), version int)".formatted(POST_TABLE_NAME);
+            try (var stm = connection.createStatement()) {
+                // create the table if not exists
+                stm.executeUpdate(createTableSqlString);
+            }
+        }
+    }
+
+    @BeforeEach
     public void restoreSnapshot() throws SQLException {
         try (var connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
             var truncateSql = "TRUNCATE %s RESTART IDENTITY".formatted(POST_TABLE_NAME);
